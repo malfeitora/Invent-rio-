@@ -1,266 +1,246 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Menu RPG - Inventário</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventário Elden Ring</title>
   <style>
     body {
+      font-family: 'Arial', sans-serif;
+      background-color: #111;
+      color: #e0e0e0;
       margin: 0;
-      background: #1a1a1a;
-      color: #fff;
-      font-family: 'Garamond', serif;
-      background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxMLGjeGn1wJM5aSRVmyYgbdbsKiy3xcZRDA1FlgQx3uo0_uA5fLn1c5Q&s=10');
-      background-size: cover;
-      background-attachment: fixed;
-    }
-    .menu {
-      padding: 20px;
-      text-align: center;
-    }
-    .menu button {
-      font-size: 24px;
-      padding: 10px 20px;
-      cursor: pointer;
-      background: #3b2f2f;
-      color: #f0d28a;
-      border-radius: 10px;
-      margin: 10px;
-    }
-    .inventory {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-    }
-    .slot-row {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 10px;
-      gap: 10px;
-    }
-    .slot {
-      width: 64px;
-      height: 64px;
-      background: #333;
-      border: 2px solid #c2a94e;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      padding: 0;
       overflow: hidden;
-      position: relative;
     }
-    .slot img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+
+    header {
+      background-color: #333;
+      padding: 15px;
+      text-align: center;
+      font-size: 32px;
+      font-weight: bold;
+      color: #f9f9f9;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
     }
-    .hidden-file-input {
-      display: none;
-    }
-    .flagelo-container {
+
+    .inventory-container {
       display: flex;
-      align-items: center;
       justify-content: center;
-      margin-top: 30px;
-    }
-    .fala {
-      font-style: italic;
-      font-size: 18px;
-      max-width: 300px;
-      margin-left: 20px;
-    }
-    #chatContainer {
-      display: none;
-      flex-direction: column;
-      align-items: center;
       padding: 20px;
+      margin-top: 20px;
     }
-    #chatBox {
-      width: 90%;
-      max-width: 400px;
-      height: 200px;
-      background: rgba(0,0,0,0.6);
-      border: 1px solid #c2a94e;
+
+    .inventory {
+      display: grid;
+      grid-template-columns: repeat(5, 120px);
+      gap: 15px;
+      grid-template-rows: repeat(2, 120px);
       padding: 10px;
-      overflow-y: auto;
-      margin-bottom: 10px;
+      background-color: #222;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
     }
-    #playerInput {
-      width: 90%;
-      max-width: 400px;
+
+    .inventory-item {
+      background-color: #3a3a3a;
+      border-radius: 8px;
       padding: 10px;
-      border-radius: 5px;
-      border: none;
-    }
-    .options button {
-      background: #3b2f2f;
-      color: #f0d28a;
-      border-radius: 5px;
-      margin: 5px;
-      padding: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      transition: all 0.3s ease-in-out;
       cursor: pointer;
+    }
+
+    .inventory-item:hover {
+      transform: scale(1.1);
+      background-color: #444;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .inventory-item img {
+      max-width: 80px;
+      max-height: 80px;
+      border-radius: 5px;
+    }
+
+    .item-details {
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(0, 0, 0, 0.9);
+      padding: 20px;
+      width: 300px;
+      color: #f0f0f0;
+      border-radius: 10px;
+      display: none;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+    }
+
+    .close-btn {
+      background-color: #444;
+      color: #fff;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 14px;
+    }
+
+    .remove-btn {
+      background-color: #d9534f;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .description-input {
+      margin-top: 10px;
+      width: 100%;
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #333;
+      background-color: #444;
+      color: #fff;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
-  <div class="menu">
-    <button onclick="abrirInventario()">INVENTARIO</button>
-    <button onclick="abrirConversa()">CONVERSAR COM A FLAGELO SOLAR</button>
+
+  <header>
+    Inventário - Elden Ring
+  </header>
+
+  <div class="inventory-container">
+    <div class="inventory" id="inventory">
+      <!-- Slots vazios para itens -->
+      <div class="inventory-item" onclick="openFileInput(0)">
+        <input type="file" id="file-0" class="file-input" accept="image/*" onchange="addImageToSlot(event, 0)">
+      </div>
+      <div class="inventory-item" onclick="openFileInput(1)">
+        <input type="file" id="file-1" class="file-input" accept="image/*" onchange="addImageToSlot(event, 1)">
+      </div>
+      <div class="inventory-item" onclick="openFileInput(2)">
+        <input type="file" id="file-2" class="file-input" accept="image/*" onchange="addImageToSlot(event, 2)">
+      </div>
+      <div class="inventory-item" onclick="openFileInput(3)">
+        <input type="file" id="file-3" class="file-input" accept="image/*" onchange="addImageToSlot(event, 3)">
+      </div>
+      <div class="inventory-item" onclick="openFileInput(4)">
+        <input type="file" id="file-4" class="file-input" accept="image/*" onchange="addImageToSlot(event, 4)">
+      </div>
+      <div class="inventory-item" onclick="openFileInput(5)">
+        <input type="file" id="file-5" class="file-input" accept="image/*" onchange="addImageToSlot(event, 5)">
+      </div>
+      <div class="inventory-item" onclick="openFileInput(6)">
+        <input type="file" id="file-6" class="file-input" accept="image/*" onchange="addImageToSlot(event, 6)">
+      </div>
+      <div class="inventory-item" onclick="openFileInput(7)">
+        <input type="file" id="file-7" class="file-input" accept="image/*" onchange="addImageToSlot(event, 7)">
+      </div>
+      <div class="inventory-item" onclick="openFileInput(8)">
+        <input type="file" id="file-8" class="file-input" accept="image/*" onchange="addImageToSlot(event, 8)">
+      </div>
+      <div class="inventory-item" onclick="openFileInput(9)">
+        <input type="file" id="file-9" class="file-input" accept="image/*" onchange="addImageToSlot(event, 9)">
+      </div>
+    </div>
   </div>
 
-  <div class="inventory" id="inventario">
-    <div class="flagelo-container">
-      <div class="fala" id="falaFlagelo"></div>
-    </div>
-    <div id="slots"></div>
-  </div>
-
-  <div id="chatContainer">
-    <div id="chatBox"></div>
-    <div class="options">
-      <button onclick="responder('quem é você')">Quem é você?</button>
-      <button onclick="responder('como posso te encontrar')">Como posso te encontrar?</button>
-      <button onclick="responder('o que você faz')">O que você faz?</button>
-      <button onclick="responder('o que é esse lugar')">O que é esse lugar?</button>
-    </div>
+  <div class="item-details" id="item-details">
+    <button class="close-btn" onclick="closeItemDetails()">Fechar</button>
+    <h3 id="item-details-name">Nome do Item</h3>
+    <p id="item-details-description">Descrição do Item...</p>
+    <textarea id="item-description-input" class="description-input" placeholder="Digite a descrição do item..."></textarea>
+    <button class="remove-btn" id="remove-item-btn" onclick="removeItem()">Remover</button>
   </div>
 
   <script>
-    const falaList = [
-      "Você encontrou novos itens?", "O vazio guarda segredos...", "A escuridão observa...",
-      "Você ouviu o sussurro das estrelas?", "Itens esquecidos, poder oculto.",
-      "A poeira dos antigos cobre esse artefato...", "Suas mãos estão sujas de ambição?",
-      "Há magia em cada canto deste mundo.", "Tolos correm atrás de poder...",
-      "Lembre-se, o silêncio fala mais que mil espadas.",
-      "Carregue apenas o necessário. O resto é peso.",
-      "Uma sombra se arrasta atrás de você.", "Você me escuta? Ou apenas me sente?",
-      "O tempo dobra-se aos que dominam o desconhecido.", "Toque apenas o que aceita ser tocado.",
-      "A estrela negra sussurrou seu nome...", "Queimou a essência de um deus, não foi?",
-      "O frio aqui não é deste mundo.", "Há algo errado neste item...",
-      "Seu bolso está mais cheio que sua alma.", "Guarde o que não pode ser visto.",
-      "Não tema a perda, tema o ganho.", "Tudo que brilha sangra na luz.",
-      "Você tem coragem... ou apenas sorte?", "Você sabe o preço de carregar isso?",
-      "O som do metal... tão reconfortante.", "Não desperdice aquilo que foi selado.",
-      "Você é digno deste poder?", "As estrelas guiam, mas não perdoam.",
-      "Há beleza até nas maldições..."
-    ];
+    let selectedItem = null;
+    let selectedSlot = null;
 
-    // Função para abrir o inventário
-    function abrirInventario() {
-      const inv = document.getElementById("inventario");
-      inv.style.display = "flex";  // Mostra o inventário
-      document.getElementById("falaFlagelo").textContent = falaList[Math.floor(Math.random() * falaList.length)];
+    // Função para abrir o seletor de arquivo
+    function openFileInput(slotId) {
+      selectedSlot = slotId;
+      document.getElementById(`file-${slotId}`).click();
     }
 
-    // Função para abrir o chat de conversa com a Flagelo
-    function abrirConversa() {
-      const chat = document.getElementById("chatContainer");
-      chat.style.display = "flex";  // Mostra o chat
-    }
+    // Adicionar imagem ao slot
+    function addImageToSlot(event, slotId) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const slot = document.getElementsByClassName('inventory-item')[slotId];
+          slot.innerHTML = `<img src="${e.target.result}" alt="Item" onclick="showItemDetails(${slotId})">`;
 
-    // Função de resposta da Flagelo baseada na opção selecionada
-    function responder(opcao) {
-      const chatBox = document.getElementById("chatBox");
-      const resposta = document.createElement("div");
-
-      switch (opcao) {
-        case 'quem é você':
-          resposta.textContent = "Eu sou a Flagelo Solar, guardiã do vazio.";
-          break;
-        case 'como posso te encontrar':
-          resposta.textContent = "Você já me encontrou, Maculado. Estou em todos os lugares e em nenhum.";
-          break;
-        case 'o que você faz':
-          resposta.textContent = "Eu observo o que se esconde nas sombras e guio aqueles que buscam poder.";
-          break;
-        case 'o que é esse lugar':
-          resposta.textContent = "Este é o limbo, o entre-lugar entre mundos, onde os esquecidos repousam.";
-          break;
-        default:
-          resposta.textContent = "Eu não entendi sua pergunta, Maculado. Fale mais claro.";
-      }
-
-      chatBox.appendChild(resposta);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    // Função para atualizar a frase da Flagelo a cada 60 segundos
-    function atualizarFrase() {
-      const fala = document.getElementById("falaFlagelo");
-      if (fala) {
-        fala.textContent = falaList[Math.floor(Math.random() * falaList.length)];
-      }
-    }
-
-    setInterval(atualizarFrase, 60000); // A cada 60 segundos
-
-    // Gerar os slots do inventário
-    const container = document.getElementById("slots");
-    for (let i = 0; i < 10; i += 5) {
-      const row = document.createElement("div");
-      row.className = "slot-row";
-      for (let j = i; j < i + 5; j++) {
-        const slot = document.createElement("div");
-        slot.className = "slot";
-        slot.dataset.index = j;
-
-        const savedImage = localStorage.getItem(`slotImg${j}`);
-        if (savedImage) {
-          const img = document.createElement('img');
-          img.src = savedImage;
-          slot.appendChild(img);
+          // Salvar a imagem no localStorage
+          localStorage.setItem(`slot-${slotId}-image`, e.target.result);
         }
-
-        const input = document.createElement("input");
-        input.type = "file";
-        input.accept = "image/*";
-        input.className = "hidden-file-input";
-
-        input.addEventListener("change", () => {
-          const file = input.files[0];
-          if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-              localStorage.setItem(`slotImg${j}`, e.target.result);
-              slot.innerHTML = "";
-              const img = document.createElement("img");
-              img.src = e.target.result;
-              slot.appendChild(img);
-            }
-            reader.readAsDataURL(file);
-          }
-        });
-
-        slot.addEventListener("click", () => input.click());
-
-        let pressTimer;
-        slot.addEventListener("mousedown", () => {
-          pressTimer = setTimeout(() => {
-            if (slot.querySelector("img")) {
-              const removeBtn = document.createElement("button");
-              removeBtn.textContent = "Remover";
-              removeBtn.style.position = "absolute";
-              removeBtn.style.bottom = "5px";
-              removeBtn.style.left = "5px";
-              removeBtn.style.background = "red";
-              removeBtn.style.color = "white";
-              removeBtn.addEventListener("click", () => {
-                localStorage.removeItem(`slotImg${j}`);
-                slot.innerHTML = "";
-              });
-              slot.appendChild(removeBtn);
-            }
-          }, 1000);  // Aguardar 1 segundo para abrir o botão de remover
-        });
-
-        slot.addEventListener("mouseup", () => {
-          clearTimeout(pressTimer);
-        });
-
-        row.appendChild(slot);
+        reader.readAsDataURL(file);
       }
-      container.appendChild(row);
+    }
+
+    // Exibir detalhes do item e permitir edição de descrição
+    function showItemDetails(slotId) {
+      selectedSlot = slotId;
+      const itemImage = document.getElementsByClassName('inventory-item')[slotId].querySelector('img').src;
+      const detailsContainer = document.getElementById('item-details');
+      document.getElementById('item-details-name').textContent = `Item ${slotId + 1}`;
+      document.getElementById('item-details-description').textContent = "Descrição: Não fornecida.";
+      document.getElementById('item-description-input').value = localStorage.getItem(`slot-${slotId}-description`) || ""; // Exibe a descrição salva
+      detailsContainer.style.display = 'block';
+    }
+
+    // Fechar os detalhes do item
+    function closeItemDetails() {
+      const detailsContainer = document.getElementById('item-details');
+      detailsContainer.style.display = 'none';
+    }
+
+    // Remover item do slot
+    function removeItem() {
+      const slot = document.getElementsByClassName('inventory-item')[selectedSlot];
+      slot.innerHTML = ''; // Limpar o slot
+
+      // Remover do localStorage
+      localStorage.removeItem(`slot-${selectedSlot}-image`);
+      localStorage.removeItem(`slot-${selectedSlot}-description`);
+
+      closeItemDetails();
+    }
+
+    // Salvar a descrição do item
+    document.getElementById('item-description-input').addEventListener('input', function() {
+      const description = this.value;
+      localStorage.setItem(`slot-${selectedSlot}-description`, description);
+    });
+
+    // Carregar as imagens e descrições ao carregar a página
+    window.onload = function() {
+      for (let i = 0; i < 10; i++) {
+        const slot = document.getElementsByClassName('inventory-item')[i];
+        const image = localStorage.getItem(`slot-${i}-image`);
+        if (image) {
+          slot.innerHTML = `<img src="${image}" alt="Item" onclick="showItemDetails(${i})">`;
+        }
+      }
     }
   </script>
+
 </body>
 </html>
